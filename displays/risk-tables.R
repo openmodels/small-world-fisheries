@@ -1,16 +1,15 @@
-setwd("~/Dropbox/High_Seas/codeR")
-datapath <- "~/research/highseas/"
-resultpath <- "../results/"
+datapath <- "../../data/"
+resultpath <- "../../results/"
 
 library(xtable)
-source("saufuncs.R")
+source("../lib/saufuncs.R")
 
 yeargroup.suffix <- "-cl" #"-ln" #"-en"
 
-regions <- read.csv(paste0(datapath, "dataCSV/weights/combined-regions-new.csv"))
-weights <- read.csv(paste0(datapath, "dataCSV/weights/combined-country.csv"))
-risk.value <- read.csv(paste0(resultpath, "atrisk/value", yeargroup.suffix, ".csv"))
-risk.portion <- read.csv(paste0(resultpath, "atrisk/portion-split", yeargroup.suffix, ".csv"))
+regions <- read.csv(paste0(datapath, "weights/combined-regions-new.csv"))
+weights <- read.csv(paste0(datapath, "weights/combined-country.csv"))
+risk.value <- read.csv(paste0(resultpath, "value", yeargroup.suffix, ".csv"))
+risk.portion <- read.csv(paste0(resultpath, "portion-split", yeargroup.suffix, ".csv"))
 risk.portion <- risk.portion[risk.portion$resilience == 'total',]
 
 ## Combine EEZs to SAU level, as done for atrisk/value
@@ -57,7 +56,7 @@ Encoding(tbl.value$sink) <- 'latin1'
 
 names(tbl.value) <- c("EEZ", "Sovereign", "Avg. MTe3", "Avg. \\$M", "Risk MTe3", "Risk \\$M")
 
-print(xtable(tbl.value, digits=1, label='tbl:risk-value'), file="../paper/tables/risk-value.tex", sanitize.colnames.function=function(x) x, include.rownames=F, tabular.environment="longtable", floating=F)
+print(xtable(tbl.value, digits=1, label='tbl:risk-value'), file="risk-value.tex", sanitize.colnames.function=function(x) x, include.rownames=F, tabular.environment="longtable", floating=F)
 
 ## Weights
 library(dplyr)
@@ -80,7 +79,7 @@ tbl.portion$sovereign[tbl.portion$sovereign == "St. Vincent & the Grenadines"] <
 
 names(tbl.portion) <- c("Sovereign", "Avg. MTe3", "Avg. \\$M", "GDP \\$M", "Pop. (1e6s)", "Workers (1e3s)", "Protein P.C.", "Fish Protein", "R. value (\\%)", "R. GDP (\\%)", "R. jobs (\\%)", "R. protein (\\%)")
 
-print(xtable(tbl.portion, digits=1, label='tbl:risk-portion'), file="../paper/tables/risk-portion.tex", sanitize.colnames.function=function(x) x, include.rownames=F, tabular.environment="longtable", floating=F)
+print(xtable(tbl.portion, digits=1, label='tbl:risk-portion'), file="risk-portion.tex", sanitize.colnames.function=function(x) x, include.rownames=F, tabular.environment="longtable", floating=F)
 
 risk.value$valueorder[order(risk.value$value, decreasing=T)] <- 1:nrow(risk.value)
 risk.value$catchorder[order(risk.value$catch, decreasing=T)] <- 1:nrow(risk.value)
@@ -109,7 +108,7 @@ ggplot(risk.value, aes(valueorder, value / 1e6, colour=valueincluded)) +
     theme(legend.justification=c(0,0), legend.position=c(.1, .1)) +
     scale_colour_manual(name="", breaks=c(T, F), labels=c("Included", "Excluded"), values=c("#a6cee3", "#33a02c")) +
     scale_x_continuous(expand=c(0, 0)) + ggtitle("Exponential decline in value from other countries")
-ggsave("../paper/figures/logplot-value.pdf", width=5, height=5)
+ggsave("logplot-value.pdf", width=5, height=5)
 
 risk.value$catchincluded <- risk.value$catchorder > 8 & risk.value$catchorder < 170
 
@@ -122,4 +121,4 @@ ggplot(risk.value, aes(catchorder, catch / 1e3, colour=catchincluded)) +
     theme(legend.justification=c(0,0), legend.position=c(.1, .1)) +
     scale_colour_manual(name="", breaks=c(T, F), labels=c("Included", "Excluded"), values=c("#a6cee3", "#33a02c")) +
     scale_x_continuous(expand=c(0, 0)) + ggtitle("Exponential decline in catch from other countries")
-ggsave("../paper/figures/logplot-catch.pdf", width=5, height=5)
+ggsave("logplot-catch.pdf", width=5, height=5)

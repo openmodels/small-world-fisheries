@@ -285,7 +285,7 @@ eez2sau <- function(eez) {
 
 ## Compute the average landed value and MT catch for the last 10 years for the given species
 ## Note:
-## groups <- read.csv("../dataCSV/groups.csv")
+## groups <- read.csv("../groups.csv")
 ## myvalues <- combine.regions(values, regionids)
 ## mycatches <- combine.regions(catches, regionids)
 species.averages <- function(specie, mygroups, myvalues, mycatches) {

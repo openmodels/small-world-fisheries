@@ -1,12 +1,12 @@
- setwd("~/Dropbox/High_Seas/codeR")
-resultpath <- "../results/"
+datapath <- "../../data/"
+resultpath <- "../../results/"
 
 #socioeconomic variables
-totalrisk.country <- read.csv(paste0(resultpath, "atrisk/portion-split-cl.csv"))
+totalrisk.country <- read.csv(paste0(datapath, "atrisk/portion-split-cl.csv"))
 totalrisk.country <- subset(totalrisk.country, resilience == "total")
 
 #can manually change to move points around
-centroids <- read.csv("../dataCSV/centroids.csv")
+centroids <- read.csv(paste0(datapath, "shapefiles/centroids.csv"))
 
 #top N countries
 topN <- 20
@@ -14,18 +14,18 @@ library(maps)
 library(png)
 library(RColorBrewer)
 library(classInt)
-gpclibPermit()
+##gpclibPermit()
 library(maptools)
 library(mapproj)
 
-source("names.R")
+source("../analysis/lib/names.R")
 
 ## Load all icons
 #each icon 128x128 pixels and the last dimension is RGBalpha alpha is level of transparency
-icon.catch <- readPNG("../icons/catch.png")
-icon.food <- readPNG("../icons/food.png")
-icon.gdp <- readPNG("../icons/dollar.png")
-icon.jobs <- readPNG("../icons/jobs.png")
+icon.catch <- readPNG("icons/catch.png")
+icon.food <- readPNG("icons/food.png")
+icon.gdp <- readPNG("icons/dollar.png")
+icon.jobs <- readPNG("icons/jobs.png")
 
 # catch marine blue
 icon.catch[,,2] <- 126 / 255
@@ -65,10 +65,10 @@ for (ii in 1:nrow(totalrisk.country)) {valueCol[ii]=colors[findInterval(totalris
 
 ## Identify top topN countries with each icon
 #defines which countries get an icon (top N by variable)
-totalrisk.country$icon.catch <- (totalrisk.country$byecon > .3) 
-totalrisk.country$icon.gdp <- (totalrisk.country$bygdp > 0.008) 
-totalrisk.country$icon.jobs <- (totalrisk.country$byjobs > 0.015) 
-totalrisk.country$icon.food <- (totalrisk.country$byfood > 0.018) 
+totalrisk.country$icon.catch <- (totalrisk.country$byecon > .3)
+totalrisk.country$icon.gdp <- (totalrisk.country$bygdp > 0.008)
+totalrisk.country$icon.jobs <- (totalrisk.country$byjobs > 0.015)
+totalrisk.country$icon.food <- (totalrisk.country$byfood > 0.018)
 
 
 # totalrisk.country$icon.catch <- totalrisk.country$catch > quantile(totalrisk.country$catch, 1 - topN / nrow(totalrisk.country), na.rm=T)
@@ -88,9 +88,9 @@ name2map <- function(name) {
     if (name == "United Kingdom")
         return(c("UK", "Anguilla", "Virgin Islands, British", "Cayman Islands", "Montserrat", "Turks and Caicos Islands"))
     if (name == "France")
-        return(c("France", "Saint Barthelemy", "Saint Martin", "Guadeloupe", "Martinique"))        
+        return(c("France", "Saint Barthelemy", "Saint Martin", "Guadeloupe", "Martinique"))
     if (name == "Netherlands")
-        return(c("Netherlands", "Sint Maarten", "Curacao", "Aruba"))             
+        return(c("Netherlands", "Sint Maarten", "Curacao", "Aruba"))
     if (name == "Congo, Dem. Rep.")
         return("Democratic Republic of the Congo")
     if (name == "Congo, Rep.")
@@ -204,7 +204,7 @@ plotmap <- function(totalrisk.country, fileout, xlim=c(-180, 180), ylim=c(-90, 9
                 ycoord <- 26.077
             } else if (country == "Antigua and Barbuda") {
                 xcoord <- -61.793
-                ycoord <- 17.089            
+                ycoord <- 17.089
             } else if (country == "Dominica") {
                 xcoord <- -61.352
                 ycoord <- 15.447
@@ -339,27 +339,27 @@ plotmap <- function(totalrisk.country, fileout, xlim=c(-180, 180), ylim=c(-90, 9
     dev.off()
 }
 
-plotmap(totalrisk.country, "../figures/bigmap-globe.pdf", xlim=c(-165, 195), ylim=c(-60, 90), bcolor="#00000080")
+plotmap(totalrisk.country, paste0(resultpath, "bigmap-globe.pdf"), xlim=c(-165, 195), ylim=c(-60, 90), bcolor="#00000080")
 
 ##Europe
-#plotmap(totalrisk.country, "../figures/bigmap-europe-test.png", xlim=c(-15, 30), ylim=c(35, 75), scalemult=2, yscale=1, bcolor="#00000080")
+#plotmap(totalrisk.country, paste0(resultpath, "bigmap-europe-test.png"), xlim=c(-15, 30), ylim=c(35, 75), scalemult=2, yscale=1, bcolor="#00000080")
 
 ##Caribbean
-plotmap(totalrisk.country, "../figures/bigmap-caribbean.pdf", xlim=c(-65, -53), ylim=c(0, 15), scalemult=2, yscale=2, bcolor="#00000080")
+plotmap(totalrisk.country, paste0(resultpath, "bigmap-caribbean.pdf"), xlim=c(-65, -53), ylim=c(0, 15), scalemult=2, yscale=2, bcolor="#00000080")
 
 ##Southeast Asia and Pacific Islands
-plotmap(totalrisk.country, "../figures/bigmap-southpacific.pdf", xlim=c(110, 185), ylim=c(-15, 20), scalemult=2, yscale=2, bcolor="#00000080")
+plotmap(totalrisk.country, paste0(resultpath, "bigmap-southpacific.pdf"), xlim=c(110, 185), ylim=c(-15, 20), scalemult=2, yscale=2, bcolor="#00000080")
 ## map.axes()
 
 ## North Sea
 #x is lat limits and y is lon limits
 #play with scalemult to see if that fixes the problem
 
-plotmap(totalrisk.country, "../figures/bigmap-northsea.pdf", xlim=c(-7, 31), ylim=c(49, 71), scalemult=4, yscale=1, bcolor="#00000080")
+plotmap(totalrisk.country, paste0(resultpath, "bigmap-northsea.pdf"), xlim=c(-7, 31), ylim=c(49, 71), scalemult=4, yscale=1, bcolor="#00000080")
 ## West Africa
-#plotmap(totalrisk.country, "../figures/bigmap-westafrica.png", xlim=c(-20, -5), ylim=c(0, 20), scalemult=2, yscale=2)
+#plotmap(totalrisk.country, paste0(resultpath, "bigmap-westafrica.png"), xlim=c(-20, -5), ylim=c(0, 20), scalemult=2, yscale=2)
 
 ## Indonesia
-#plotmap(totalrisk.country, "../figures/bigmap-indonesia.png", xlim=c(95, 130), ylim=c(-15, 20), scalemult=2, yscale=2)
+#plotmap(totalrisk.country, paste0(resultpath, "bigmap-indonesia.png"), xlim=c(95, 130), ylim=c(-15, 20), scalemult=2, yscale=2)
 
 

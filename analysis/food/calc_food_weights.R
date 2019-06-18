@@ -1,16 +1,5 @@
 #Calculate food weights from master-food.csv
 
-## do.windows <- .Platform$OS.type != "unix"
-## if (do.windows){
-##   setwd("C:/Users/Nandini/Dropbox/High_Seas/codeR/food")
-##   datapath <- "C:/Users/Nandini/Dropbox/High_Seas/results/"
-##   outputpath <- "C:/Users/Nandini/OneDrive/Columbia/Research/Conflict hotspots/highseas/dataCSV/weights/"
-## } else {
-##   setwd("~/Dropbox/High_Seas/codeR/food")
-##   datapath <- "~/research/highseas/"
-##   outputpath <- "~/research/highseas/dataCSV/weights/"
-## }
-
 ## masterfood <- read.csv(paste0(datapath,"master-food.csv"))
 
 calc.food.metric <- function(food.table, production, protein.req, protein.tot, protein.fish, risks) {

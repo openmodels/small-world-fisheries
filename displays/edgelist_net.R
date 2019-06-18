@@ -1,13 +1,8 @@
 ## All paths are relative after this point.  Change here as needed.
-do.windows <- F
 
-if (do.windows) {
-  setwd("C:/Users/Nandini/Dropbox/High_Seas/codeR")
-} else {
-  setwd("~/Dropbox/High_Seas/codeR")
-}
+resultpath <- "../../results/"
 
-edgeweights <- as.data.frame(read.csv("edgeweights-cl.csv"))
+edgeweights <- as.data.frame(read.csv(paste0(resultpath, "edgeweights-cl.csv")))
 ctr <-0
 edge.net <- vector(mode = "numeric",length = length(as.character(edgeweights$source)))
 source.net <- vector(mode = "character",length = length(as.character(edgeweights$source)))
@@ -50,4 +45,4 @@ edge.net[edge.net==0] <- NA
 edgeweights.net.temp <- data.frame(source=source.net, target=sink.net, weight=edge.net)
 edgeweights.net <- na.omit(edgeweights.net.temp)
 
-write.csv(edgeweights.net, file="edgelist_net_cl_gephi.csv", row.names=FALSE)
+write.csv(edgeweights.net, file=paste0(resultpath, "edgelist_net_cl_gephi.csv"), row.names=FALSE)

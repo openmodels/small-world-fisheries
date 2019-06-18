@@ -1,7 +1,10 @@
-## This file produces the "../dataCSV/weights/combined-temp-nr.csv" file which
+## This file produces the "weights/combined-temp-nr.csv" file which
 ## describes regions and countries
 
-do.windows <- .Platform$OS.type != "unix"
+## All paths are relative after this point.  Change here as needed.
+datapath <- "../../../data/"
+resultpath <- "../../../results/"
+
 filesuffix <- "" #"-1995-2004" #"-temp-nr"
 
 if (filesuffix == "-1995-2004") {
@@ -10,17 +13,6 @@ if (filesuffix == "-1995-2004") {
 } else if (filesuffix == "") {
     fromyear <- -9
     toyear <- 0
-}
-
-## All paths are relative after this point.  Change here as needed.
-if (do.windows) {
-    setwd("C:/Users/Nandini/Dropbox/High_Seas/codeR")
-    datapath <- "C:/Users/Nandini/OneDrive/Columbia/Research/Conflict\ Hotspots/highseas/"
-    resultpath <-"C:/Users/Nandini/Dropbox/High_Seas/results/"
-} else {
-    setwd("~/Dropbox/High_Seas/codeR")
-    datapath <- "~/research/highseas/"
-    resultpath <- "~/Dropbox/High_Seas/results/"
 }
 
 ## Plots and maps are produced at the bottom if these are T
@@ -33,7 +25,7 @@ if (do.generate) {
 ## `countries` provides a name for each SAU region
 ## Sea Around Us data has code numbers for each country, countries.txt has the mapping for these codes
 ## SAU data - catch & landed values
-countries <- read.delim(paste0(datapath, "dataTEXT/saudata-new/countries.txt"), sep="\t", header=F)
+countries <- read.delim(paste0(datapath, "saudata/countries.txt"), sep="\t", header=F)
 
 ## Extract the "Totals" row for SAU files
 ## Returns a matrix with rows of regions and columns of years (1950 - 2006)
@@ -61,26 +53,26 @@ sau.extract.totals <- function(values) {
 }
 
 ## Load all landed catch values
-values <- read.delim(paste0(datapath, "dataTEXT/saudata-new/values.csv"), sep=",", header=F)
+values <- read.delim(paste0(datapath, "saudata/values.csv"), sep=",", header=F)
 
 totals <- sau.extract.totals(values)
 
 ## Load all catch MTs
-values <- read.delim(paste0(datapath, "dataTEXT/saudata-new/catches.csv"), sep=",", header=F)
+values <- read.delim(paste0(datapath, "saudata/catches.csv"), sep=",", header=F)
 
 totals2 <- sau.extract.totals(values)
 
 regionids <- unique(countries[,1])
 
 ## Construct protein totals
-speciesinfo <- read.csv(paste0(datapath, "dataTEXT/saudata-new/species.csv"))
-source("food/protein.R")
-    
+speciesinfo <- read.csv(paste0(datapath, "saudata/species.csv"))
+source("../food/protein.R")
+
 regionids <- unique(countries[,1])
 proteintotals2 <- as.data.frame(matrix(NA, ncol(values)-1, length(regionids)))
 names(proteintotals2) <- regionids
 lastkey <- values[1,1]
-keyrow <- 1    
+keyrow <- 1
 for (ii in 1:nrow(values)) {
     if (values[ii,1] == name.to.extract) {
         ## At this point, we have everything
@@ -109,18 +101,18 @@ for (ii in 1:nrow(values)) {
 }
 
 ## Construct by-country information
-regioninfo <- read.delim(paste0(datapath, "dataTEXT/saudata/countryinfo.csv"), sep=",", header=T)
+regioninfo <- read.delim(paste0(datapath, "saudata/countryinfo.csv"), sep=",", header=T)
 regioninfo <- regioninfo[!duplicated(regioninfo),] # drop duplicates
 
 ## Load naming tools
-source("names.R") # this is in http://github.com/jrising/research-common
+source("../lib/names.R") # this is in http://github.com/jrising/research-common
 
 sau2canonical <- function(country) {
     if (country %in% c("China (Hong Kong)", "Hong Kong (China)"))
         return("Hong Kong")
     if (country == "Comoros Isl.")
       return("Comoros")
-    if (country == "Côte d'Ivoire")
+    if (country == "CÃ´te d'Ivoire")
       return("Cote d'Ivoire")
     if (country %in% c("Denmark (Greenland)", "Greenland (Denmark)"))
       return("Greenland")
@@ -207,7 +199,7 @@ for (ii in 1:ncol(totals)) {
 regioninfo$eez <- regioninfo$sovereign
 
 ## Write out region weights
-write.csv(regioninfo, paste0(datapath, "dataCSV/weights/combined-regions-new", filesuffix, ".csv"), row.names=F)
+write.csv(regioninfo, paste0(datapath, "weights/combined-regions-new", filesuffix, ".csv"), row.names=F)
 
 ## Aggregate to the country (sovereign) level
 countryinfo <- data.frame(sovereign=c(), eez.km2.=c(), shelf.km2.=c(), inshore.km2.=c(), reefs.pow.=c(), mounts.pow.=c(), primeprod=c(), avgecon=c(), avgcatch=c(), avgproteincatch=c())
@@ -233,7 +225,7 @@ translations <- list("Antigua and Barbuda "="Antigua &amp; Barbuda",
                      "Comoros"="Comoros Isl.",
                      "Congo (DemRep)"="Congo (ex-Zaire)",
                      "Congo (Rep.)"="Congo, R. of",
-                     "Cote d'Ivoire"="C�te d'Ivoire",
+                     "Cote d'Ivoire"="Côte d'Ivoire",
                      "Dominican Rp"="Dominican Republic",
                      "Eq Guinea"="Equatorial Guinea",
                      "GuineaBissau"="Guinea-Bissau",
@@ -257,13 +249,9 @@ translations <- list("Antigua and Barbuda "="Antigua &amp; Barbuda",
                      "Vietnam"="Viet Nam")
 
 ## Load the worker data
-workers <- read.csv(paste0(datapath, "dataCSV/weights/workers.csv"))
+workers <- read.csv(paste0(datapath, "weights/workers.csv"))
 for (ii in 1:nrow(workers)) {
-    if (do.windows) {
-      ptval <- as.numeric(strsplit(as.character(workers$Total[ii]), "±")[[1]][1])
-    } else {
-      ptval <- as.numeric(strsplit(as.character(workers$Total[ii]), "�")[[1]][1])
-    }
+    ptval <- as.numeric(strsplit(as.character(workers$Total[ii]), "±")[[1]][1])
     countryname <- as.character(workers$Country[ii])
 
     ## Use WB to make sovereign
@@ -298,18 +286,14 @@ for (ii in 1:nrow(workers)) {
 ## Add some World Bank data
 countryinfo$gdp <- NA # GDP
 countryinfo$population <- NA # Population
-countryinfo$laborforce <- NA # Labor force    
+countryinfo$laborforce <- NA # Labor force
 countryinfo$surface.area <- NA # Surface area
 
-gdps <- read.csv(paste0(datapath, "dataCSV/weights/ny.gdp.mktp.kd_Indicator_en_csv_v2.csv"))
-pops <- read.csv(paste0(datapath, "dataCSV/weights/sp.pop.totl_Indicator_en_csv_v2.csv"))
-labs <- read.csv(paste0(datapath, "dataCSV/weights/API_SL.TLF.TOTL.IN_DS2_en_csv_v2_10516832.csv"))
-surs <- read.csv(paste0(datapath, "dataCSV/weights/ag.srf.totl.k2_Indicator_en_csv_v2.csv"))
-if (do.windows) {
-    country.column <- "�..Country.Name"
-} else {
-    country.column <- "Country.Name"
-}
+gdps <- read.csv(paste0(datapath, "weights/ny.gdp.mktp.kd_Indicator_en_csv_v2.csv"))
+pops <- read.csv(paste0(datapath, "weights/sp.pop.totl_Indicator_en_csv_v2.csv"))
+labs <- read.csv(paste0(datapath, "weights/API_SL.TLF.TOTL.IN_DS2_en_csv_v2_10516832.csv"))
+surs <- read.csv(paste0(datapath, "weights/ag.srf.totl.k2_Indicator_en_csv_v2.csv"))
+country.column <- "Country.Name"
 
 ## Averaging values over the same years as for SAU data (97-05)
 for (countryname in unique(gdps[, country.column])) {
@@ -346,7 +330,7 @@ countryinfo$protein.an <- NA #total animal protein g per day per capita
 ## countryinfo$food.pc <- NA #total food kcal per day per capita
 ## countryinfo$food.weight <- NA #food security weighting that takes into account protein availability etc
 
-food.all <- read.csv(paste0(datapath, "dataCSV/weights/Food_data_2011.csv"))
+food.all <- read.csv(paste0(datapath, "weights/Food_data_2011.csv"))
 
 count <- 0
 for (countryname in unique(food.all$Country)) {
@@ -387,11 +371,11 @@ countryinfo$area.ratio <- countryinfo$eez.km2. / (countryinfo$eez.km2. + country
 #countryinfo$food.ratio <- countryinfo$food.ff / countryinfo$food.pc
 #countryinfo$protein.ratio <- countryinfo$protein.ff / countryinfo$protein.pc
 #countryinfo$protein.an.ratio <- countryinfo$protein.ff / countryinfo$protein.an
-write.csv(countryinfo, paste0(datapath, "dataCSV/weights/combined-country", filesuffix, ".csv"), row.names=F)
+write.csv(countryinfo, paste0(datapath, "weights/combined-country", filesuffix, ".csv"), row.names=F)
 
 } else {
-    regioninfo <- read.csv(paste0(datapath, "dataCSV/weights/combined-regions-new", filesuffix, ".csv"))
-    countryinfo <- read.csv(paste0(datapath, "dataCSV/weights/combined-country", filesuffix, ".csv"))
+    regioninfo <- read.csv(paste0(datapath, "weights/combined-regions-new", filesuffix, ".csv"))
+    countryinfo <- read.csv(paste0(datapath, "weights/combined-country", filesuffix, ".csv"))
 }
 
 if (do.plots) {
@@ -434,101 +418,4 @@ if (do.plots) {
       geom_density(aes(x=countryinfo$protein.an.ratio), colour=2) +
       scale_x_log10() + ggtitle("Portion of animal protein by country") +
       xlab('')
-}
-
-if (do.maps) {
-    library(maps)
-
-    library(maptools)
-    library(RColorBrewer)
-    library(classInt)
-
-    colors <- brewer.pal(9, "YlOrRd")
-
-    brks<-classIntervals(countryinfo$worker.ratio, n=9, style="quantile")
-    brks<- brks$brks
-
-    valid <- !is.na(countryinfo$worker.ratio)
-
-    map("world", ylim=c(-60, 90))
-    for (ii in which(valid))
-        tryCatch({
-            name <- any2map(as.character(countryinfo$sovereign[ii]))
-            map("world", name, fill=T, col=colors[findInterval(countryinfo$worker.ratio[ii], brks, all.inside=TRUE)], add=T)
-        }, error=function(e) {
-            print(paste("Cannot find", countryinfo$sovereign[ii]))
-        })
-    legend("bottomleft", legend=leglabs(round(brks, 6)), fill=colors, bty="n",x.intersp = .5, y.intersp = 1., cex=.5)
-
-    brks<-classIntervals(countryinfo$gdp.ratio, n=9, style="quantile")
-    brks<- brks$brks
-
-    valid <- !is.na(countryinfo$gdp.ratio)
-
-    map("world", ylim=c(-60, 90))
-    map("world", countryinfo$sovereign[valid], fill=T, col=colors[findInterval(countryinfo$gdp.ratio[valid], brks, all.inside=TRUE)], add=T)
-    legend("bottomleft", legend=leglabs(round(brks, 4)), fill=colors, bty="n",x.intersp = .5, y.intersp = 1.)
-}
-
-
-### Get list of all EEZ borders
-
-library(PBSmapping) # GIS mapping library
-
-## EEZ shapefile
-one <- importShapefile("World_EEZ_v8_20140228_LR/World_EEZ_v8_2014")
-
-## Ensure that there is at least one point in every .5x.5 grid cell
-two <- thickenPolys(one, 50) # in km since EEZ map is proj=LL
-
-## Construct row and column numbers for each vertex
-two$col <- floor((two$X - -180) / .5) + 1
-two$col[two$col == 0] <- 1 # some less than -180!
-two$col[two$col == 721] <- 720 # some equal to 180!
-
-two$row <- floor((two$Y - -90) / .5) + 1
-
-## Construct unique identifier for all 'touched' cells
-two$index <- two$row * 720 + two$col
-
-## Construct final image matrix
-lons <- seq(-179.75, 180, by=.5)
-lats <- seq(-89.75, 90, by=.5)
-
-## Construct a table of all borders
-borders <- data.frame(country.list=c(), pid.list=c(), num.cells=c(), max.density=c(), sum.lats=c(), sum.lons=c())
-
-for (index in unique(two$index)) {
-  print(index)
-  row <- index %/% 720 + 1
-  col <- index %% 720 + 1
-
-  ## Only include cells if more than one Sovereign
-  pids <- unique(two$PID[two$index == index])
-  if (length(unique(attributes(one)$PolyData$Sovereign[pids])) == 1)
-    next
-
-  ## Have we already encountered this collection of pids
-  pid.list <- paste(sort(pids), collapse=" ")
-  found <- which(borders$pid.list == pid.list)
-  if (length(found) > 0) {
-    borders$num.cells[found] <- borders$num.cells[found] + 1
-    borders$sum.lats[found] <- borders$sum.lats[found] + lats[row]
-    borders$sum.lons[found] <- borders$sum.lons[found] + lons[col]
-  } else {
-    borders <- rbind(borders, data.frame(country.list=paste(unique(attributes(one)$PolyData$Sovereign[pids]), collapse=" "),
-                                         pid.list=pid.list, num.cells=1, sum.lats=lats[row], sum.lons=lons[col]))
-  }
-}
-
-borders$lat <- borders$sum.lats / borders$num.cells
-borders$lon <- borders$sum.lons / borders$num.cells
-
-if (do.maps) {
-    library(maps)
-
-    pdf("figures/borders.pdf")
-    map("world")
-    points(borders$lon, borders$lat, pch=16, col=2)
-    dev.off()
 }

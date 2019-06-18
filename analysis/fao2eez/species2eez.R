@@ -1,11 +1,11 @@
-setwd("~/Dropbox/High_Seas/codeR/fao2eez")
+## Create the specieseez.csv mapping file.
 
-datapath <- "~/research/highseas"
+datapath <- "../../../data/"
 
 fao2eez <- read.csv("fao2eez.csv")
 fao2eez$encoded <- paste(fao2eez$area, fao2eez$country, sep='.')
 ##species <- read.csv("Unknown Regions Species.csv")
-species <- read.csv(paste0(datapath, "/dataCSV/Region FAO EEZ matching.csv"))
+species <- read.csv(paste0(datapath, "/shapefiles/Region FAO EEZ matching.csv"))
 
 fao2eez$area <- as.character(fao2eez$area)
 fao2eez$subarea <- as.character(fao2eez$subarea)

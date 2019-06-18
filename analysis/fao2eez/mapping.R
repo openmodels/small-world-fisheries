@@ -1,13 +1,13 @@
-setwd("~/Dropbox/High_Seas/codeR/fao2eez")
+## Generate the fao2eez mapping file.
 
-datapath <- "~/research/highseas/"
+datapath <- "../../../data/"
 
 library(PBSmapping)
-divs <- importShapefile(paste0(datapath, "dataShapes/fa_/fa_"), readDBF=T)
+divs <- importShapefile(paste0(datapath, "shapefiles/fa_/fa_"), readDBF=T)
 dbfs <- attr(divs, "PolyData")
 proj.abbr <- attr(divs, "projection")
 
-eezs <- importShapefile(paste0(datapath, "dataShapes/World_EEZ_v8_20140228_LR/World_EEZ_v8_2014"), readDBF=T)
+eezs <- importShapefile(paste0(datapath, "shapefiles/World_EEZ_v8_20140228_LR/World_EEZ_v8_2014"), readDBF=T)
 eezs.info <- attr(eezs, "PolyData")
 
 events <- data.frame(EID=1:nrow(eezs), X=eezs$X, Y=eezs$Y)

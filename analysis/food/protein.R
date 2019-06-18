@@ -1,5 +1,5 @@
-protein.portions <- read.csv(paste0(datapath, "dataCSV/protein-portions.csv"))
-taxonomy1 <- read.csv(paste0(datapath, "dataCSV/taxonomy-fixed.csv"))
+protein.portions <- read.csv(paste0(datapath, "economics/protein-portions.csv"))
+taxonomy1 <- read.csv(paste0(datapath, "spawn/taxonomy.csv"))
 
 genuses <- sapply(protein.portions$Scientific.name, function(species) { strsplit(as.character(species), ' ')[[1]][1] })
 genuses[!(genuses %in% taxonomy1$genus)]
@@ -39,7 +39,7 @@ get.protein <- function(scientific) {
 
 ## Diagnostics:
 
-## groups <- read.csv(paste0(datapath, "dataTEXT/saudata-new/species.csv"))
+## groups <- read.csv(paste0(datapath, "saudata/species.csv"))
 
 ## results <- data.frame(scientific=c(), level=c(), protein=c())
 ## for (ii in which(!duplicated(groups$scientific))) {

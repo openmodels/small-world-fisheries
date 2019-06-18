@@ -1,4 +1,4 @@
-df.resilience <- read.csv(file.path(datapath, "dataCSV/resilience.csv"))
+df.resilience <- read.csv(file.path(datapath, "spawn/resilience.csv"))
 df.resilience$genus <- sapply(strsplit(as.character(df.resilience$scientific), " "), function(x) x[[1]][1])
 
 get.species.resilience <- function(scientific) {

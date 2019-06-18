@@ -1,9 +1,6 @@
-## setwd("~/Dropbox/High_Seas/codeR")
-## datapath <- "~/research/highseas"
+source("../lib/names.R")
 
-source("names.R")
-
-comtrade <- read.csv(file.path(datapath, "dataSources/comtrade.csv"))
+comtrade <- read.csv(file.path(datapath, "economics/comtrade.csv"))
 
 comtradedf <- data.frame(country=c(), iso=c(), year=c(), import.weight=c(), export.weight=c(), import.value=c(), export.value=c())
 for (year in min(comtrade$Year):max(comtrade$Year)) {
@@ -25,7 +22,7 @@ for (year in min(comtrade$Year):max(comtrade$Year)) {
 }
 
 ## Add on production
-## countryinfo <- read.csv(file.path(datapath, "dataCSV/weights/combined-country.csv"))
+## countryinfo <- read.csv(file.path(datapath, "weights/combined-country.csv"))
 
 ## atrisk <- read.csv("../results/atrisk/portion-shelf-cl-new.csv")
 calc.food.table <- function(sovereign, year0, year1) {
