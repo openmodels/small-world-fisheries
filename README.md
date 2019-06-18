@@ -9,7 +9,7 @@ Dispersal. Science. doi:10.1126/science.aav3409
 ```
 
 This repository provides reproduction code for the paper, and works in
-conjuction with the dataset https://zenodo.org/record/2636745.
+conjuction with the dataset https://zenodo.org/record/3249468.
 
 ## Setup
 
